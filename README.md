@@ -1,26 +1,39 @@
-# UTS - E-CourseITK (PENDAFTARAN PELATIHAN)
+# UTS PBO - E-Course ITK (Pendaftaran Pelatihan)
 
-# DESKRIPSI PROYEK
-sistem ini dirancang untuk mengelola pendaftaran pelatihan di kampus ITK menggunakan paradigma Object-Oriented Programing dengan bahasan kontlin
+## Deskripsi Proyek
+Sistem ini dirancang untuk mengelola pendaftaran pelatihan online di ITK
+menggunakan paradigma Object-Oriented Programming (OOP) dengan bahasa Kotlin.
 
-# TEMA
+## Tema
 E-Course ITK - Pendaftaran Pelatihan
 
-# MAHASISWA 
-Nama : [ISI NAMA KAMU]
-NIM : [ISI NIM KAMU]
-Kelas : [ISI KELAS KAMU]
+## Mahasiswa
+- Nama  : [ISI NAMA KAMU]
+- NIM   : [ISI NIM KAMU]
+- Kelas : [ISI KELAS KAMU]
 
-# Entitas Sistem
-Member : pengguna yang ingin mendaftar pelatihan
-Resepsionis: admin yang mengelola daftar pelatihan
-Lapangan : objek yang bisa dipesan oleh member
+## Entitas Sistem
+- Peserta      : pengguna yang melakukan pendaftaran kelas pelatihan
+- Instruktur   : pengajar yang mengelola kelas dan daftar siswa aktif
+- KelaKursus   : objek kelas yang bisa didaftarkan oleh peserta
 
-# Aturan Bisnis
-pendaftar ditolak jika kelas kursus telah mencapai batas maksimum peserta
-peserta yang berhasil mendaftar akan ditambahkan ke "daftar siswa"
+## Aturan Bisnis
+- Pendaftaran ditolak jika KelaKursus telah mencapai Batas Maksimal Peserta
+- Peserta yang berhasil mendaftar akan ditambahkan ke Daftar Siswa Aktif
+- Instruktur dapat mengatur ulang batas maksimal peserta suatu kelas
 
-# Status PEngerjaan
- Tahap 1: Analisis SDLC & GitHub Repository
- Tahap 2: Use Case Diagram & Class Diagram
- Tahap 3: Implementasi Kotlin
+## Struktur Proyek
+UTS-PBO-ECourseITK/
+├── src/
+│   └── ECourseITK.kt
+└── README.md
+
+## Cara Menjalankan
+1. Buka https://play.kotlinlang.org
+2. Copy-paste isi file src/ECourseITK.kt
+3. Klik tombol Run
+
+## Status Pengerjaan
+- [x] Tahap 1: Analisis SDLC & GitHub Repository
+- [x] Tahap 2: Use Case Diagram & Class Diagram
+- [x] Tahap 3: Implementasi Kotlin
