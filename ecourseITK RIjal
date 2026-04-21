@@ -1,0 +1,255 @@
+// ============================================================
+// UTS PBO - E-Course ITK (Pendaftaran Pelatihan)
+// Implementasi Enkapsulasi Kotlin
+// ============================================================
+
+// ========================
+// CLASS: KelaKursus
+// ========================
+class KelaKursus(
+    private val idKelas: Int,
+    private val namaKelas: String,
+    private var batasMaksimal: Int
+) {
+    private var jumlahTerdaftar: Int = 0
+    private val daftarSiswaAktif: MutableList<String> = mutableListOf()
+
+    fun getIdKelas(): Int = idKelas
+    fun getNamaKelas(): String = namaKelas
+    fun getBatasMaksimal(): Int = batasMaksimal
+    fun getJumlahTerdaftar(): Int = jumlahTerdaftar
+    fun getDaftarSiswaAktif(): List<String> = daftarSiswaAktif.toList()
+
+    fun isTersedia(): Boolean = jumlahTerdaftar < batasMaksimal
+
+    fun setBatasMaksimal(batas: Int) {
+        if (batas <= 0) {
+            println("  [ERROR] Batas maksimal harus lebih dari 0!")
+            return
+        }
+        batasMaksimal = batas
+        println("  [INFO] Batas maksimal kelas $namaKelas diubah menjadi $batas peserta.")
+    }
+
+    fun tambahSiswa(nama: String): Boolean {
+        if (!isTersedia()) {
+            println("  [GAGAL] Kelas $namaKelas sudah mencapai batas maksimal ($batasMaksimal peserta)!")
+            return false
+        }
+        daftarSiswaAktif.add(nama)
+        jumlahTerdaftar++
+        return true
+    }
+
+    fun tampilInfo() {
+        println("  Kelas        : $namaKelas")
+        println("  Terdaftar    : $jumlahTerdaftar / $batasMaksimal")
+        println("  Status       : ${if (isTersedia()) "MASIH TERSEDIA" else "PENUH"}")
+    }
+
+    fun tampilDaftarSiswa() {
+        println("  === Daftar Siswa Aktif - $namaKelas ===")
+        if (daftarSiswaAktif.isEmpty()) {
+            println("  (Belum ada siswa terdaftar)")
+        } else {
+            daftarSiswaAktif.forEachIndexed { index, nama ->
+                println("  ${index + 1}. $nama")
+            }
+        }
+    }
+}
+
+// ========================
+// CLASS: Peserta
+// ========================
+class Peserta(
+    private val id: Int,
+    private val nama: String,
+    private val email: String
+) {
+    private val daftarKelasAktif: MutableList<String> = mutableListOf()
+
+    fun getId(): Int = id
+    fun getNama(): String = nama
+    fun getEmail(): String = email
+    fun getDaftarKelas(): List<String> = daftarKelasAktif.toList()
+
+    fun tambahKelas(namaKelas: String) {
+        daftarKelasAktif.add(namaKelas)
+    }
+
+    fun tampilInfo() {
+        println("  Peserta  : $nama")
+        println("  Email    : $email")
+        println("  Kelas    : ${if (daftarKelasAktif.isEmpty()) "-" else daftarKelasAktif.joinToString(", ")}")
+    }
+}
+
+// ========================
+// CLASS: Instruktur
+// ========================
+class Instruktur(
+    private val id: Int,
+    private val nama: String,
+    private val keahlian: String
+) {
+    fun getId(): Int = id
+    fun getNama(): String = nama
+    fun getKeahlian(): String = keahlian
+
+    fun aturBatasPeserta(kelas: KelaKursus, batas: Int) {
+        println("\n  Instruktur $nama mengatur batas peserta...")
+        kelas.setBatasMaksimal(batas)
+    }
+
+    fun lihatSiswaAktif(kelas: KelaKursus) {
+        println("\n  Instruktur $nama melihat daftar siswa aktif:")
+        kelas.tampilDaftarSiswa()
+    }
+
+    fun kelolaKelas(kelas: KelaKursus) {
+        println("\n  Instruktur $nama mengelola kelas:")
+        kelas.tampilInfo()
+    }
+}
+
+// ========================
+// CLASS: Pendaftaran
+// ========================
+class Pendaftaran(
+    private val idPendaftaran: Int,
+    private val peserta: Peserta,
+    private val kelaKursus: KelaKursus,
+    private val tanggal: String
+) {
+    private var status: String = "PENDING"
+
+    fun getIdPendaftaran(): Int = idPendaftaran
+    fun getStatus(): String = status
+
+    fun daftar() {
+        println("\n  Memproses pendaftaran...")
+        println("  Peserta  : ${peserta.getNama()}")
+        println("  Kelas    : ${kelaKursus.getNamaKelas()}")
+        println("  Tanggal  : $tanggal")
+        println("  Kapasitas: ${kelaKursus.getJumlahTerdaftar()} / ${kelaKursus.getBatasMaksimal()}")
+
+        // Validasi: cek kuota kelas
+        if (!kelaKursus.isTersedia()) {
+            println("  [GAGAL] Pendaftaran DITOLAK! KelaKursus sudah mencapai Batas Maksimal Peserta.")
+            status = "DITOLAK"
+            return
+        }
+
+        // Proses pendaftaran
+        val berhasil = kelaKursus.tambahSiswa(peserta.getNama())
+        if (berhasil) {
+            peserta.tambahKelas(kelaKursus.getNamaKelas())
+            status = "SUKSES"
+            println("  [SUKSES] Pendaftaran #$idPendaftaran BERHASIL!")
+            println("  [INFO] ${peserta.getNama()} ditambahkan ke Daftar Siswa Aktif.")
+        } else {
+            status = "DITOLAK"
+        }
+    }
+
+    fun batalDaftar() {
+        if (status == "SUKSES") {
+            status = "DIBATALKAN"
+            println("  [INFO] Pendaftaran #$idPendaftaran dibatalkan.")
+        } else {
+            println("  [ERROR] Tidak bisa membatalkan pendaftaran dengan status: $status")
+        }
+    }
+
+    fun tampilInfo() {
+        println("  Pendaftaran #$idPendaftaran | ${peserta.getNama()} | ${kelaKursus.getNamaKelas()} | Status: $status")
+    }
+}
+
+// ========================
+// MAIN FUNCTION
+// ========================
+fun main() {
+
+    println("============================================================")
+    println("       SISTEM E-COURSE ITK - PENDAFTARAN PELATIHAN")
+    println("============================================================")
+
+    // Inisialisasi objek
+    val kelas1 = KelaKursus(1, "Kotlin untuk Pemula", 2)
+    val kelas2 = KelaKursus(2, "Machine Learning Dasar", 3)
+    val peserta1 = Peserta(1, "Andi", "andi@itk.ac.id")
+    val peserta2 = Peserta(2, "Budi", "budi@itk.ac.id")
+    val peserta3 = Peserta(3, "Citra", "citra@itk.ac.id")
+    val instruktur = Instruktur(1, "Dr. Hendra", "Pemrograman & AI")
+
+    // DATA AWAL
+    println("\n[INFO] DATA AWAL KELAS")
+    println("-----------------------------------------------")
+    kelas1.tampilInfo()
+    println()
+    kelas2.tampilInfo()
+
+    // -----------------------------------------------
+    println("\n============================================================")
+    println("  SIMULASI 1: SUKSES - Andi daftar Kotlin untuk Pemula")
+    println("============================================================")
+    val p1 = Pendaftaran(101, peserta1, kelas1, "2026-04-21")
+    p1.daftar()
+
+    // -----------------------------------------------
+    println("\n============================================================")
+    println("  SIMULASI 2: SUKSES - Budi daftar Kotlin untuk Pemula")
+    println("============================================================")
+    val p2 = Pendaftaran(102, peserta2, kelas1, "2026-04-21")
+    p2.daftar()
+
+    // -----------------------------------------------
+    println("\n============================================================")
+    println("  SIMULASI 3: GAGAL - Citra daftar tapi kelas sudah PENUH")
+    println("============================================================")
+    val p3 = Pendaftaran(103, peserta3, kelas1, "2026-04-21")
+    p3.daftar()
+
+    // -----------------------------------------------
+    println("\n============================================================")
+    println("  SIMULASI 4: SUKSES - Citra daftar kelas lain yang tersedia")
+    println("============================================================")
+    val p4 = Pendaftaran(104, peserta3, kelas2, "2026-04-21")
+    p4.daftar()
+
+    // -----------------------------------------------
+    println("\n============================================================")
+    println("  SIMULASI 5: Instruktur kelola kelas & lihat siswa aktif")
+    println("============================================================")
+    instruktur.kelolaKelas(kelas1)
+    instruktur.lihatSiswaAktif(kelas1)
+    instruktur.aturBatasPeserta(kelas2, 5)
+
+    // -----------------------------------------------
+    println("\n[INFO] STATUS AKHIR SEMUA PENDAFTARAN")
+    println("-----------------------------------------------")
+    p1.tampilInfo()
+    p2.tampilInfo()
+    p3.tampilInfo()
+    p4.tampilInfo()
+
+    println("\n[INFO] DATA AKHIR PESERTA")
+    println("-----------------------------------------------")
+    peserta1.tampilInfo()
+    println()
+    peserta2.tampilInfo()
+    println()
+    peserta3.tampilInfo()
+
+    println("\n[INFO] STATUS AKHIR KELAS")
+    println("-----------------------------------------------")
+    kelas1.tampilInfo()
+    println()
+    kelas2.tampilInfo()
+
+    println("\n============================================================")
+    println("     SIMULASI SELESAI")
+    println("============================================================")
+}
